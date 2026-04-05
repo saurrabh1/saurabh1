@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Carousel: watsonx vs n8n</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 40px 20px;
+  }
+
+  .nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 13px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .nav b { color: #a78bfa; }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .slide-num {
+    position: absolute;
+    top: 40px;
+    right: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    opacity: 0.4;
+    color: #fff;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    padding: 6px 16px;
+    border-radius: 100px;
+  }
+
+  /* SLIDE 1 — dark purple gradient */
+  .s1 { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+  .s1 .tag { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+  .s1 h1 { font-size: 58px; font-weight: 800; color: #fff; line-height: 1.15; }
+  .s1 h1 span { color: #a78bfa; }
+  .s1 .sub { margin-top: 28px; font-size: 22px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+  .s1 .brand { position: absolute; bottom: 48px; left: 80px; font-size: 16px; color: rgba(255,255,255,0.35); font-weight: 600; letter-spacing: 1px; }
+
+  /* SLIDE 2 — dark slate */
+  .s2 { background: linear-gradient(160deg, #0a0a0f, #13131f); border: 1px solid rgba(255,255,255,0.06); }
+  .s2 h2 { font-size: 42px; font-weight: 800; color: #fff; margin-bottom: 48px; line-height: 1.2; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .col-box { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 32px; border: 1px solid rgba(255,255,255,0.08); }
+  .col-box .col-title { font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  .n8n-color { color: #ff6b35; }
+  .wx-color { color: #4f88ff; }
+  .col-box li { list-style: none; color: rgba(255,255,255,0.75); font-size: 18px; line-height: 1.6; margin-bottom: 10px; padding-left: 20px; position: relative; }
+  .col-box li::before { content: "→"; position: absolute; left: 0; opacity: 0.5; }
+
+  /* SLIDE 3 — dark with orange accent */
+  .s3 { background: linear-gradient(160deg, #0f0a00, #1a1200); border: 1px solid rgba(255,107,53,0.1); }
+  .s3 h2 { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 44px; line-height: 1.2; }
+  .round-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #ff6b35; margin-bottom: 16px; }
+  .winner-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.25); border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 700; color: #ff6b35; margin-top: 24px; }
+  .winner-badge-blue { background: rgba(79,136,255,0.12); border-color: rgba(79,136,255,0.25); color: #4f88ff; }
+
+  /* SLIDE 4 — dark navy */
+  .s4 { background: linear-gradient(160deg, #00060f, #001529); border: 1px solid rgba(79,136,255,0.1); }
+  .s4 h2 { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 44px; line-height: 1.2; }
+
+  /* SLIDE 5 — dark green/teal for compliance */
+  .s5 { background: linear-gradient(160deg, #000f08, #001a10); border: 1px solid rgba(34,197,94,0.1); }
+  .s5 h2 { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 44px; line-height: 1.2; }
+  .compliance-badge { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 24px 32px; margin-top: 32px; }
+  .compliance-badge p { color: rgba(255,255,255,0.8); font-size: 20px; line-height: 1.6; }
+  .compliance-badge span { color: #22c55e; font-weight: 700; }
+
+  /* SLIDE 6 — cost */
+  .s6 { background: linear-gradient(160deg, #0a0a0a, #141414); }
+  .s6 h2 { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 44px; line-height: 1.2; }
+  .cost-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cost-label { font-size: 20px; color: rgba(255,255,255,0.6); }
+  .cost-value { font-size: 24px; font-weight: 700; }
+  .insight-box { margin-top: 36px; background: rgba(255,255,255,0.04); border-left: 3px solid #a78bfa; border-radius: 8px; padding: 20px 24px; }
+  .insight-box p { color: rgba(255,255,255,0.75); font-size: 19px; line-height: 1.6; }
+
+  /* SLIDE 7 — table */
+  .s7 { background: linear-gradient(160deg, #080810, #0f0f1f); padding: 60px; }
+  .s7 h2 { font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 36px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 0 0 16px 0; }
+  td { font-size: 17px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+  td:first-child { color: #fff; font-weight: 500; }
+  .yes { color: #22c55e; font-weight: 700; }
+  .no { color: #ef4444; font-weight: 700; }
+  .ok { color: #f59e0b; font-weight: 700; }
+
+  /* SLIDE 8 — honest take */
+  .s8 { background: linear-gradient(160deg, #0a050f, #150a20); border: 1px solid rgba(167,139,250,0.1); }
+  .s8 h2 { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 44px; line-height: 1.2; }
+  .quote-block { background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.15); border-radius: 16px; padding: 36px; margin-bottom: 28px; }
+  .quote-block p { font-size: 21px; color: rgba(255,255,255,0.85); line-height: 1.65; }
+  .quote-block span { color: #a78bfa; font-weight: 700; }
+  .analogy { font-size: 22px; color: rgba(255,255,255,0.5); font-style: italic; line-height: 1.6; }
+
+  /* SLIDE 9 — CTA */
+  .s9 { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); justify-content: center; align-items: center; text-align: center; }
+  .s9 h2 { font-size: 52px; font-weight: 900; color: #fff; margin-bottom: 32px; line-height: 1.2; }
+  .s9 h2 span { color: #a78bfa; }
+  .cta-options { display: flex; flex-direction: column; gap: 16px; margin-bottom: 56px; }
+  .cta-opt { font-size: 22px; color: rgba(255,255,255,0.75); }
+  .cta-opt b { color: #fff; }
+  .handle { font-size: 20px; color: rgba(255,255,255,0.4); letter-spacing: 2px; font-weight: 600; }
+  .handle span { color: #a78bfa; }
+
+  /* print helper */
+  @media print {
+    body { background: #111; gap: 0; padding: 0; }
+    .slide { border-radius: 0; page-break-after: always; }
+    .nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  Screenshot each slide (1080×1080) → post as LinkedIn carousel<br>
+  <b>9 slides total</b> — scroll down for all
+</div>
+
+<!-- SLIDE 1 -->
+<div class="slide s1">
+  <div class="slide-num">1 / 9</div>
+  <div class="tag">AI Automation</div>
+  <h1>Everyone's building GTM agents on <span>n8n.</span><br>But is it enough?</h1>
+  <p class="sub">watsonx Orchestrate vs n8n — an honest breakdown for founders who need this to actually work in production.</p>
+  <div class="brand">Saurabh Videolab</div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide s2">
+  <div class="slide-num">2 / 9</div>
+  <h2>Know which problem you're solving first.</h2>
+  <div class="two-col">
+    <div class="col-box">
+      <div class="col-title n8n-color">Use n8n if...</div>
+      <ul>
+        <li>You're a startup moving fast</li>
+        <li>You iterate daily on workflows</li>
+        <li>No compliance requirements</li>
+        <li>Budget is tight</li>
+      </ul>
+    </div>
+    <div class="col-box">
+      <div class="col-title wx-color">Use watsonx if...</div>
+      <ul>
+        <li>Clients are enterprise or regulated</li>
+        <li>You need full auditability</li>
+        <li>Client data is involved</li>
+        <li>You need SAP / Salesforce / Workday</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide s3">
+  <div class="slide-num">3 / 9</div>
+  <div class="round-label">Round 1</div>
+  <h2>Speed to first working agent.</h2>
+  <div class="two-col">
+    <div class="col-box">
+      <div class="col-title n8n-color">n8n</div>
+      <ul>
+        <li>First workflow: 15 mins</li>
+        <li>Drag-and-drop canvas</li>
+        <li>Self-hostable in 30 mins</li>
+        <li>Community templates for everything</li>
+      </ul>
+      <div class="winner-badge">🏆 Winner for speed</div>
+    </div>
+    <div class="col-box">
+      <div class="col-title wx-color">watsonx Orchestrate</div>
+      <ul>
+        <li>First agent: 2–4 hours</li>
+        <li>More configuration upfront</li>
+        <li>80+ enterprise connectors built in</li>
+        <li>Worth it if those integrations matter</li>
+      </ul>
+      <div class="winner-badge winner-badge-blue">🏆 Winner for enterprise integrations</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide s4">
+  <div class="slide-num">4 / 9</div>
+  <div class="round-label" style="color:#4f88ff">Round 2</div>
+  <h2>Multi-agent orchestration.</h2>
+  <div class="two-col">
+    <div class="col-box">
+      <div class="col-title n8n-color">n8n</div>
+      <ul>
+        <li>Supports loops & sub-workflows</li>
+        <li>Claude Flow integration possible</li>
+        <li>Best for linear / branching flows</li>
+        <li>Complex multi-agent = manual wiring</li>
+      </ul>
+      <div class="winner-badge">🏆 Quick automation chains</div>
+    </div>
+    <div class="col-box">
+      <div class="col-title wx-color">watsonx Orchestrate</div>
+      <ul>
+        <li>Native multi-agent orchestration</li>
+        <li>Structured context passing between agents</li>
+        <li>Role-based agent permissions</li>
+        <li>Parallel specialist agents out of the box</li>
+      </ul>
+      <div class="winner-badge winner-badge-blue">🏆 Complex orchestration</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide s5">
+  <div class="slide-num">5 / 9</div>
+  <div class="round-label" style="color:#22c55e">Round 3</div>
+  <h2>The question enterprise clients always ask:</h2>
+  <p style="font-size:28px; color:rgba(255,255,255,0.9); font-weight:700; line-height:1.4; margin-bottom:24px;">"Can you prove what the AI did — and when?"</p>
+  <div class="two-col">
+    <div class="col-box">
+      <div class="col-title n8n-color">n8n</div>
+      <ul>
+        <li>Execution logs exist</li>
+        <li>Not designed for formal audit trails</li>
+        <li>No built-in governance layer</li>
+        <li>You'd build compliance tracking yourself</li>
+      </ul>
+    </div>
+    <div class="col-box">
+      <div class="col-title wx-color">watsonx Orchestrate</div>
+      <ul>
+        <li>Full audit trail — every action logged</li>
+        <li>GDPR, HIPAA, SOC2-aligned</li>
+        <li>IBM Trust Layer built in</li>
+        <li>Bias detection + data lineage</li>
+      </ul>
+      <div class="winner-badge winner-badge-blue">🏆 No contest — if compliance matters</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6 -->
+<div class="slide s6">
+  <div class="slide-num">6 / 9</div>
+  <div class="round-label" style="color:#f59e0b">Round 4</div>
+  <h2>What does it actually cost?</h2>
+  <div class="cost-row">
+    <span class="cost-label">n8n (self-hosted)</span>
+    <span class="cost-value n8n-color">Free</span>
+  </div>
+  <div class="cost-row">
+    <span class="cost-label">n8n (cloud)</span>
+    <span class="cost-value n8n-color">$20–50/month</span>
+  </div>
+  <div class="cost-row">
+    <span class="cost-label">watsonx Orchestrate</span>
+    <span class="cost-value wx-color">From ~$200/month</span>
+  </div>
+  <div class="insight-box">
+    <p>The real question: <b style="color:#fff">What's the cost of NOT having auditability when an enterprise client asks?</b><br>Price vs. risk trade-off — not just sticker price.</p>
+  </div>
+</div>
+
+<!-- SLIDE 7 -->
+<div class="slide s7">
+  <div class="slide-num">7 / 9</div>
+  <h2>The honest match-up.</h2>
+  <table>
+    <tr>
+      <th>Use Case</th>
+      <th style="color:#ff6b35">n8n</th>
+      <th style="color:#4f88ff">watsonx</th>
+    </tr>
+    <tr><td>Startup GTM automation</td><td class="yes">✓ Best</td><td class="ok">Overkill</td></tr>
+    <tr><td>Enterprise client deliverables</td><td class="no">Risk</td><td class="yes">✓ Best</td></tr>
+    <tr><td>Lead scraping + enrichment</td><td class="yes">✓ Best</td><td class="ok">Possible</td></tr>
+    <tr><td>Regulated industry (finance, health)</td><td class="no">Risk</td><td class="yes">✓ Best</td></tr>
+    <tr><td>Claude Code integration</td><td class="yes">✓ Native</td><td class="ok">Possible</td></tr>
+    <tr><td>SAP / Salesforce / Workday</td><td class="ok">Possible</td><td class="yes">✓ Native</td></tr>
+    <tr><td>Parallel multi-agent execution</td><td class="ok">Possible</td><td class="yes">✓ Best</td></tr>
+  </table>
+</div>
+
+<!-- SLIDE 8 -->
+<div class="slide s8">
+  <div class="slide-num">8 / 9</div>
+  <h2>My honest answer: I use both.</h2>
+  <div class="quote-block">
+    <p><span>n8n</span> for fast iteration, internal automation, scraping pipelines, quick MVPs.<br><br>
+    <span>watsonx</span> when the deliverable goes to enterprise clients, when there are compliance questions, or when I need multi-agent coordination at scale.</p>
+  </div>
+  <p class="analogy">They're not competing for the same job.<br>n8n is your sprint car. watsonx is your commercial truck.<br>Don't drive a truck on a racetrack.</p>
+</div>
+
+<!-- SLIDE 9 -->
+<div class="slide s9">
+  <div class="slide-num" style="color:rgba(255,255,255,0.3)">9 / 9</div>
+  <h2>Which one are<br>you <span>using?</span></h2>
+  <div class="cta-options">
+    <p class="cta-opt">Comment <b>"n8n"</b> if you're all in on n8n</p>
+    <p class="cta-opt">Comment <b>"watsonx"</b> if you've gone enterprise</p>
+    <p class="cta-opt">Comment <b>"both"</b> if you're living my life</p>
+  </div>
+  <p class="cta-opt" style="margin-bottom:16px; color:rgba(255,255,255,0.5)">Follow for real AI automation builds — not theory.</p>
+  <p class="handle"><span>@</span>saurabhvideolab</p>
+</div>
+
+</body>
+</html>
