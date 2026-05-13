@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="node_modules/gsap/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      /* Reusable card style — no position so flex/absolute is set inline */
+      .card {
+        background: rgba(15, 98, 254, 0.08);
+        border: 1px solid rgba(15, 98, 254, 0.3);
+        border-radius: 16px;
+      }
+      .card-purple { border-color: rgba(190, 149, 255, 0.35); }
+      .card-green  { border-color: rgba(66,  190, 101, 0.35); }
+      .card-yellow { border-color: rgba(241, 194,  27, 0.35); }
+      .card-teal   { border-color: rgba(8,   189, 186, 0.35); }
+
+      .tag {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #0F62FE;
+      }
+      .headline {
+        font-size: 88px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.05;
+        letter-spacing: -2px;
+      }
+      .body-txt {
+        font-size: 34px;
+        color: #A8B2C8;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30"
+      data-width="1920"
+      data-height="1080"
+    >
+
+      <!-- =====================================================================
+           PERSISTENT BACKGROUND  (tracks 0-2)
+           ===================================================================== -->
+      <div id="bg" class="clip"
+        data-start="0" data-duration="30" data-track-index="0"
+        style="position:absolute;inset:0;
+          background:radial-gradient(ellipse 80% 70% at 20% 60%,#071340 0%,#070B17 55%,#160929 100%);">
+      </div>
+
+      <div id="grid" class="clip"
+        data-start="0" data-duration="30" data-track-index="1"
+        style="position:absolute;inset:0;
+          background-image:
+            linear-gradient(rgba(15,98,254,0.06) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(15,98,254,0.06) 1px,transparent 1px);
+          background-size:80px 80px;">
+      </div>
+
+      <div id="accent-bar" class="clip"
+        data-start="0" data-duration="30" data-track-index="2"
+        style="position:absolute;bottom:0;left:0;right:0;height:4px;
+          background:linear-gradient(90deg,transparent,#0F62FE 30%,#BE95FF 70%,transparent);">
+      </div>
+
+
+      <!-- =====================================================================
+           SCENE 1 · INTRO  (0 – 7 s)
+           Text: tracks 3-6   Visuals: tracks 7-20
+           ===================================================================== -->
+
+      <!-- Text layer (each gets its own track; sequential reuse across scenes) -->
+      <div id="s1-tag" class="clip tag"
+        data-start="0" data-duration="7" data-track-index="3"
+        style="position:absolute;top:180px;left:160px;">
+        IBM Watson XOrchestra
+      </div>
+
+      <div id="s1-h1" class="clip headline"
+        data-start="0" data-duration="7" data-track-index="4"
+        style="position:absolute;top:260px;left:160px;width:960px;">
+        Orchestrate<br>Your AI Agents
+      </div>
+
+      <div id="s1-h2" class="clip"
+        data-start="0.4" data-duration="6.6" data-track-index="5"
+        style="position:absolute;top:510px;left:160px;
+          font-size:52px;font-weight:700;color:#BE95FF;">
+        The Enterprise AI Agent Platform
+      </div>
+
+      <div id="s1-body" class="clip body-txt"
+        data-start="0.8" data-duration="6.2" data-track-index="6"
+        style="position:absolute;top:600px;left:160px;width:820px;">
+        Connect, orchestrate, and govern AI workflows<br>
+        across your entire enterprise — at scale.
+      </div>
+
+      <!-- Agent network diagram -->
+      <div id="hub" class="clip"
+        data-start="0.2" data-duration="6.8" data-track-index="7"
+        style="position:absolute;width:90px;height:90px;border-radius:50%;
+          top:450px;left:1380px;
+          background:#0F62FE;box-shadow:0 0 60px rgba(15,98,254,0.7);">
+      </div>
+
+      <div id="hub-lbl" class="clip"
+        data-start="0.5" data-duration="6.5" data-track-index="8"
+        style="position:absolute;top:555px;left:1298px;
+          color:#fff;font-size:20px;font-weight:600;white-space:nowrap;">
+        Orchestrator
+      </div>
+
+      <div id="n1" class="clip"
+        data-start="0.5" data-duration="6.5" data-track-index="9"
+        style="position:absolute;width:56px;height:56px;border-radius:50%;
+          top:260px;left:1210px;background:#BE95FF;box-shadow:0 0 30px rgba(190,149,255,0.6);">
+      </div>
+      <div id="n1l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="10"
+        style="position:absolute;top:233px;left:1120px;color:#A8B2C8;font-size:21px;">
+        Data Agent
+      </div>
+
+      <div id="n2" class="clip"
+        data-start="0.7" data-duration="6.3" data-track-index="11"
+        style="position:absolute;width:56px;height:56px;border-radius:50%;
+          top:290px;left:1580px;background:#42BE65;box-shadow:0 0 30px rgba(66,190,101,0.6);">
+      </div>
+      <div id="n2l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="12"
+        style="position:absolute;top:263px;left:1598px;color:#A8B2C8;font-size:21px;">
+        API Agent
+      </div>
+
+      <div id="n3" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="13"
+        style="position:absolute;width:56px;height:56px;border-radius:50%;
+          top:630px;left:1570px;background:#FF7EB6;box-shadow:0 0 30px rgba(255,126,182,0.6);">
+      </div>
+      <div id="n3l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="14"
+        style="position:absolute;top:645px;left:1590px;color:#A8B2C8;font-size:21px;">
+        Code Agent
+      </div>
+
+      <div id="n4" class="clip"
+        data-start="1.1" data-duration="5.9" data-track-index="15"
+        style="position:absolute;width:56px;height:56px;border-radius:50%;
+          top:660px;left:1180px;background:#F1C21B;box-shadow:0 0 30px rgba(241,194,27,0.6);">
+      </div>
+      <div id="n4l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="16"
+        style="position:absolute;top:680px;left:1090px;color:#A8B2C8;font-size:21px;">
+        Search Agent
+      </div>
+
+      <div id="n5" class="clip"
+        data-start="0.6" data-duration="6.4" data-track-index="17"
+        style="position:absolute;width:46px;height:46px;border-radius:50%;
+          top:165px;left:1395px;background:#08BDBA;box-shadow:0 0 25px rgba(8,189,186,0.6);">
+      </div>
+      <div id="n5l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="18"
+        style="position:absolute;top:138px;left:1355px;color:#A8B2C8;font-size:21px;">
+        Web Agent
+      </div>
+
+      <div id="n6" class="clip"
+        data-start="0.8" data-duration="6.2" data-track-index="19"
+        style="position:absolute;width:46px;height:46px;border-radius:50%;
+          top:745px;left:1395px;background:#FF832B;box-shadow:0 0 25px rgba(255,131,43,0.6);">
+      </div>
+      <div id="n6l" class="clip"
+        data-start="0.9" data-duration="6.1" data-track-index="20"
+        style="position:absolute;top:772px;left:1360px;color:#A8B2C8;font-size:21px;">
+        DB Agent
+      </div>
+
+
+      <!-- =====================================================================
+           SCENE 2 · MULTI-AGENT ORCHESTRATION  (7 – 15 s)
+           Text reuses tracks 3-5. Visuals reuse tracks 7-10.
+           ===================================================================== -->
+      <div id="s2-tag" class="clip tag"
+        data-start="7" data-duration="8" data-track-index="3"
+        style="position:absolute;top:160px;left:160px;">
+        Feature 01
+      </div>
+
+      <div id="s2-h" class="clip headline"
+        data-start="7" data-duration="8" data-track-index="4"
+        style="position:absolute;top:230px;left:160px;font-size:76px;">
+        Multi-Agent<br>Orchestration
+      </div>
+
+      <div id="s2-body" class="clip body-txt"
+        data-start="7.5" data-duration="7.5" data-track-index="5"
+        style="position:absolute;top:480px;left:160px;width:860px;">
+        Coordinate dozens of specialized AI agents working<br>
+        in parallel on complex enterprise tasks.<br>
+        No code required.
+      </div>
+
+      <!-- Stat cards — track 6 is free, use 6-8 for scene-2-only cards -->
+      <div id="s2-c1" class="clip card"
+        data-start="8" data-duration="7" data-track-index="6"
+        style="position:absolute;top:710px;left:160px;width:390px;height:210px;padding:36px 40px;">
+        <div style="color:#0F62FE;font-size:48px;font-weight:800;line-height:1;">10x</div>
+        <div style="color:#fff;font-size:26px;font-weight:600;margin-top:8px;">Faster Execution</div>
+        <div style="color:#A8B2C8;font-size:21px;margin-top:4px;">Parallel vs sequential</div>
+      </div>
+
+      <div id="s2-c2" class="clip card card-purple"
+        data-start="8.3" data-duration="6.7" data-track-index="7"
+        style="position:absolute;top:710px;left:590px;width:390px;height:210px;padding:36px 40px;">
+        <div style="color:#BE95FF;font-size:48px;font-weight:800;line-height:1;">Auto</div>
+        <div style="color:#fff;font-size:26px;font-weight:600;margin-top:8px;">Task Routing</div>
+        <div style="color:#A8B2C8;font-size:21px;margin-top:4px;">Intelligent distribution</div>
+      </div>
+
+      <div id="s2-c3" class="clip card card-green"
+        data-start="8.6" data-duration="6.4" data-track-index="8"
+        style="position:absolute;top:710px;left:1020px;width:390px;height:210px;padding:36px 40px;">
+        <div style="color:#42BE65;font-size:48px;font-weight:800;line-height:1;">99.9%</div>
+        <div style="color:#fff;font-size:26px;font-weight:600;margin-top:8px;">Self-Healing</div>
+        <div style="color:#A8B2C8;font-size:21px;margin-top:4px;">Auto retry &amp; recovery</div>
+      </div>
+
+      <!-- Flow diagram on right (track 9) -->
+      <div id="s2-flow" class="clip"
+        data-start="7" data-duration="8" data-track-index="9"
+        style="position:absolute;top:180px;right:0;width:640px;bottom:0;
+          background:rgba(15,98,254,0.04);
+          border-left:1px solid rgba(15,98,254,0.18);
+          display:flex;align-items:center;justify-content:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px;">
+          <div id="fl1"
+            style="background:rgba(15,98,254,0.2);border:1.5px solid #0F62FE;
+              border-radius:12px;padding:18px 60px;color:#fff;font-size:26px;font-weight:600;">
+            Input Task
+          </div>
+          <div style="color:#6EA6FF;font-size:28px;">&#8595;</div>
+          <div id="fl2"
+            style="background:rgba(190,149,255,0.15);border:1.5px solid #BE95FF;
+              border-radius:12px;padding:18px 60px;color:#fff;font-size:26px;font-weight:600;">
+            Orchestrator
+          </div>
+          <div style="color:#D4BBFF;font-size:28px;">&#8595;</div>
+          <div id="fl3" style="display:flex;gap:12px;">
+            <div style="background:rgba(66,190,101,0.15);border:1.5px solid #42BE65;
+              border-radius:10px;padding:14px 24px;color:#fff;font-size:22px;">Agent A</div>
+            <div style="background:rgba(66,190,101,0.15);border:1.5px solid #42BE65;
+              border-radius:10px;padding:14px 24px;color:#fff;font-size:22px;">Agent B</div>
+            <div style="background:rgba(66,190,101,0.15);border:1.5px solid #42BE65;
+              border-radius:10px;padding:14px 24px;color:#fff;font-size:22px;">Agent C</div>
+          </div>
+          <div style="color:#6FDC8C;font-size:28px;">&#8595;</div>
+          <div id="fl4"
+            style="background:rgba(241,194,27,0.15);border:1.5px solid #F1C21B;
+              border-radius:12px;padding:18px 60px;color:#fff;font-size:26px;font-weight:600;">
+            Output Result
+          </div>
+        </div>
+      </div>
+
+
+      <!-- =====================================================================
+           SCENE 3 · WORKFLOW AUTOMATION  (15 – 22 s)
+           Text reuses tracks 3-5. Visuals reuse tracks 6-9.
+           ===================================================================== -->
+      <div id="s3-tag" class="clip tag"
+        data-start="15" data-duration="7" data-track-index="3"
+        style="position:absolute;top:160px;left:160px;">
+        Feature 02
+      </div>
+
+      <div id="s3-h" class="clip headline"
+        data-start="15" data-duration="7" data-track-index="4"
+        style="position:absolute;top:230px;left:160px;font-size:76px;">
+        Enterprise<br>Workflow Automation
+      </div>
+
+      <div id="s3-body" class="clip body-txt"
+        data-start="15.5" data-duration="6.5" data-track-index="5"
+        style="position:absolute;top:480px;left:160px;width:880px;">
+        Connect AI agents to your existing enterprise tools.<br>
+        Automate end-to-end processes with<br>
+        drag-and-drop simplicity.
+      </div>
+
+      <!-- Integration chips (track 6) -->
+      <div id="s3-ints" class="clip"
+        data-start="16" data-duration="6" data-track-index="6"
+        style="position:absolute;top:740px;left:160px;display:flex;gap:20px;">
+        <div class="card"         style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">Salesforce</div>
+        <div class="card card-purple" style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">SAP</div>
+        <div class="card card-green"  style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">Slack</div>
+        <div class="card card-yellow" style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">Jira</div>
+        <div class="card card-teal"   style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">GitHub</div>
+        <div class="card card-purple" style="padding:20px 36px;color:#fff;font-size:24px;font-weight:600;white-space:nowrap;">ServiceNow</div>
+      </div>
+
+      <!-- Metrics panel (track 7) -->
+      <div id="s3-metrics" class="clip"
+        data-start="15" data-duration="7" data-track-index="7"
+        style="position:absolute;top:200px;right:80px;width:680px;">
+
+        <div style="margin-bottom:44px;">
+          <div style="color:#A8B2C8;font-size:24px;margin-bottom:10px;">Tasks Automated / Day</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:8px;height:20px;width:580px;overflow:hidden;">
+            <div id="bar1" style="background:linear-gradient(90deg,#0F62FE,#4589FF);border-radius:8px;height:20px;width:0;"></div>
+          </div>
+          <div style="color:#fff;font-size:44px;font-weight:800;margin-top:10px;line-height:1;">50,000+</div>
+        </div>
+
+        <div style="margin-bottom:44px;">
+          <div style="color:#A8B2C8;font-size:24px;margin-bottom:10px;">Avg. Time Saved / Week</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:8px;height:20px;width:580px;overflow:hidden;">
+            <div id="bar2" style="background:linear-gradient(90deg,#BE95FF,#D4BBFF);border-radius:8px;height:20px;width:0;"></div>
+          </div>
+          <div style="color:#fff;font-size:44px;font-weight:800;margin-top:10px;line-height:1;">120 Hours</div>
+        </div>
+
+        <div>
+          <div style="color:#A8B2C8;font-size:24px;margin-bottom:10px;">Operational Cost Reduction</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:8px;height:20px;width:580px;overflow:hidden;">
+            <div id="bar3" style="background:linear-gradient(90deg,#42BE65,#6FDC8C);border-radius:8px;height:20px;width:0;"></div>
+          </div>
+          <div style="color:#fff;font-size:44px;font-weight:800;margin-top:10px;line-height:1;">68%</div>
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================================
+           SCENE 4 · ENTERPRISE TRUST  (22 – 29 s)
+           Text reuses tracks 3-5. Visuals reuse tracks 6-9.
+           ===================================================================== -->
+      <div id="s4-tag" class="clip tag"
+        data-start="22" data-duration="7" data-track-index="3"
+        style="position:absolute;top:160px;left:160px;">
+        Feature 03
+      </div>
+
+      <div id="s4-h" class="clip headline"
+        data-start="22" data-duration="7" data-track-index="4"
+        style="position:absolute;top:230px;left:160px;font-size:76px;">
+        Built for<br>Enterprise Trust
+      </div>
+
+      <div id="s4-body" class="clip body-txt"
+        data-start="22.5" data-duration="6.5" data-track-index="5"
+        style="position:absolute;top:480px;left:160px;width:880px;">
+        Full audit trail, role-based access control,<br>
+        and responsible AI governance — baked in.<br>
+        Deploy AI with confidence.
+      </div>
+
+      <!-- Pillar cards (tracks 6-8) -->
+      <div id="s4-p1" class="clip card"
+        data-start="23" data-duration="6" data-track-index="6"
+        style="position:absolute;top:710px;left:160px;width:460px;height:220px;padding:36px 40px;">
+        <div style="color:#0F62FE;font-size:36px;font-weight:800;margin-bottom:10px;">Security</div>
+        <div style="color:#fff;font-size:24px;font-weight:600;margin-bottom:6px;">SOC 2 Type II</div>
+        <div style="color:#A8B2C8;font-size:21px;">ISO 27001 Certified</div>
+      </div>
+
+      <div id="s4-p2" class="clip card card-purple"
+        data-start="23.3" data-duration="5.7" data-track-index="7"
+        style="position:absolute;top:710px;left:660px;width:460px;height:220px;padding:36px 40px;">
+        <div style="color:#BE95FF;font-size:36px;font-weight:800;margin-bottom:10px;">Audit Trail</div>
+        <div style="color:#fff;font-size:24px;font-weight:600;margin-bottom:6px;">Every Decision Logged</div>
+        <div style="color:#A8B2C8;font-size:21px;">Full explainability</div>
+      </div>
+
+      <div id="s4-p3" class="clip card card-green"
+        data-start="23.6" data-duration="5.4" data-track-index="8"
+        style="position:absolute;top:710px;left:1160px;width:460px;height:220px;padding:36px 40px;">
+        <div style="color:#42BE65;font-size:36px;font-weight:800;margin-bottom:10px;">AI Governance</div>
+        <div style="color:#fff;font-size:24px;font-weight:600;margin-bottom:6px;">Responsible AI</div>
+        <div style="color:#A8B2C8;font-size:21px;">Built-in compliance</div>
+      </div>
+
+      <!-- Audit log panel (track 9) -->
+      <div id="s4-log" class="clip"
+        data-start="22" data-duration="7" data-track-index="9"
+        style="position:absolute;top:190px;right:80px;width:700px;
+          display:flex;flex-direction:column;gap:18px;">
+        <div id="log1"
+          style="background:rgba(15,98,254,0.1);border:1px solid rgba(15,98,254,0.3);
+            border-radius:12px;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#A8B2C8;font-size:23px;">Agent Action: Read CRM Data</span>
+          <span style="color:#42BE65;font-size:21px;font-weight:700;">Approved</span>
+        </div>
+        <div id="log2"
+          style="background:rgba(15,98,254,0.1);border:1px solid rgba(15,98,254,0.3);
+            border-radius:12px;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#A8B2C8;font-size:23px;">Data Access: Customer PII</span>
+          <span style="color:#42BE65;font-size:21px;font-weight:700;">Compliant</span>
+        </div>
+        <div id="log3"
+          style="background:rgba(15,98,254,0.1);border:1px solid rgba(15,98,254,0.3);
+            border-radius:12px;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#A8B2C8;font-size:23px;">Model Output: Sent Email</span>
+          <span style="color:#F1C21B;font-size:21px;font-weight:700;">Under Review</span>
+        </div>
+        <div id="log4"
+          style="background:rgba(15,98,254,0.1);border:1px solid rgba(15,98,254,0.3);
+            border-radius:12px;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#A8B2C8;font-size:23px;">Workflow Step: Invoice Gen</span>
+          <span style="color:#42BE65;font-size:21px;font-weight:700;">Logged</span>
+        </div>
+        <div id="log5"
+          style="background:rgba(15,98,254,0.1);border:1px solid rgba(15,98,254,0.3);
+            border-radius:12px;padding:22px 30px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#A8B2C8;font-size:23px;">RBAC Check: Admin Scope</span>
+          <span style="color:#42BE65;font-size:21px;font-weight:700;">Verified</span>
+        </div>
+      </div>
+
+
+      <!-- =====================================================================
+           SCENE 5 · CTA  (29 – 30 s)   tracks 3-5
+           ===================================================================== -->
+      <div id="s5-tag" class="clip tag"
+        data-start="29" data-duration="1" data-track-index="3"
+        style="position:absolute;top:360px;left:0;right:0;text-align:center;">
+        Get Started Today
+      </div>
+
+      <div id="s5-h" class="clip headline"
+        data-start="29" data-duration="1" data-track-index="4"
+        style="position:absolute;top:420px;left:0;right:0;text-align:center;font-size:80px;">
+        watson.ibm.com
+      </div>
+
+      <div id="s5-sub" class="clip body-txt"
+        data-start="29" data-duration="1" data-track-index="5"
+        style="position:absolute;top:555px;left:0;right:0;text-align:center;font-size:32px;">
+        Start your free trial &mdash; no credit card required
+      </div>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ── Scene 1 entrance (0 – 1.5 s) ──────────────────────────────────────
+      tl.from("#s1-tag",  { opacity: 0, y: -24, duration: 0.55 }, 0.0);
+      tl.from("#s1-h1",   { opacity: 0, x: -80, duration: 0.75 }, 0.2);
+      tl.from("#s1-h2",   { opacity: 0, y:  28, duration: 0.55 }, 0.5);
+      tl.from("#s1-body", { opacity: 0, y:  20, duration: 0.5  }, 0.8);
+
+      tl.from("#hub",     { scale: 0, duration: 0.5, ease: "back.out(1.7)" }, 0.3);
+      tl.from("#hub-lbl", { opacity: 0, duration: 0.4 }, 0.8);
+
+      tl.from("#n1",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 0.55);
+      tl.from("#n2",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 0.70);
+      tl.from("#n3",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 0.95);
+      tl.from("#n4",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 1.10);
+      tl.from("#n5",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 0.63);
+      tl.from("#n6",  { scale: 0, duration: 0.4, ease: "back.out(1.7)" }, 0.85);
+
+      tl.from("#n1l,#n2l,#n3l,#n4l,#n5l,#n6l", { opacity: 0, duration: 0.5 }, 1.3);
+
+      tl.to("#hub", {
+        boxShadow: "0 0 120px rgba(15,98,254,0.9),0 0 240px rgba(15,98,254,0.4)",
+        duration: 0.9, yoyo: true, repeat: 3
+      }, 1.2);
+
+      // ── Scene 1 exit (6.5 s) + hard kills at 7.0 s ───────────────────────
+      tl.to("#s1-tag,#s1-h1,#s1-h2,#s1-body",
+        { opacity: 0, y: -28, duration: 0.5 }, 6.5);
+      tl.to("#hub,#hub-lbl,#n1,#n2,#n3,#n4,#n5,#n6,#n1l,#n2l,#n3l,#n4l,#n5l,#n6l",
+        { opacity: 0, scale: 0.85, duration: 0.5 }, 6.5);
+
+      tl.set("#s1-tag,#s1-h1,#s1-h2,#s1-body",                                   { opacity: 0 }, 7.0);
+      tl.set("#hub,#hub-lbl,#n1,#n2,#n3,#n4,#n5,#n6,#n1l,#n2l,#n3l,#n4l,#n5l,#n6l", { opacity: 0 }, 7.0);
+
+      // ── Scene 2 entrance (7 s) ─────────────────────────────────────────────
+      tl.from("#s2-tag",  { opacity: 0, y: -22, duration: 0.5  }, 7.0);
+      tl.from("#s2-h",    { opacity: 0, x: -70, duration: 0.7  }, 7.1);
+      tl.from("#s2-body", { opacity: 0, y:  22, duration: 0.55 }, 7.6);
+      tl.from("#s2-flow", { opacity: 0, x:  80, duration: 0.65 }, 7.2);
+
+      tl.from("#fl1", { opacity: 0, y: 20, duration: 0.4 }, 7.5);
+      tl.from("#fl2", { opacity: 0, y: 20, duration: 0.4 }, 7.9);
+      tl.from("#fl3", { opacity: 0, y: 20, duration: 0.4 }, 8.3);
+      tl.from("#fl4", { opacity: 0, y: 20, duration: 0.4 }, 8.7);
+
+      tl.from("#s2-c1", { opacity: 0, y: 44, duration: 0.5 }, 8.0);
+      tl.from("#s2-c2", { opacity: 0, y: 44, duration: 0.5 }, 8.3);
+      tl.from("#s2-c3", { opacity: 0, y: 44, duration: 0.5 }, 8.6);
+
+      // ── Scene 2 exit (14.5 s) + hard kills at 15.0 s ─────────────────────
+      tl.to("#s2-tag,#s2-h,#s2-body,#s2-c1,#s2-c2,#s2-c3,#s2-flow",
+        { opacity: 0, duration: 0.5 }, 14.5);
+
+      tl.set("#s2-tag,#s2-h,#s2-body,#s2-c1,#s2-c2,#s2-c3,#s2-flow", { opacity: 0 }, 15.0);
+
+      // ── Scene 3 entrance (15 s) ────────────────────────────────────────────
+      tl.from("#s3-tag",     { opacity: 0, y: -22, duration: 0.5  }, 15.0);
+      tl.from("#s3-h",       { opacity: 0, x: -70, duration: 0.7  }, 15.1);
+      tl.from("#s3-body",    { opacity: 0, y:  22, duration: 0.55 }, 15.6);
+      tl.from("#s3-metrics", { opacity: 0, x:  70, duration: 0.65 }, 15.3);
+      tl.from("#s3-ints",    { opacity: 0, y:  50, duration: 0.6  }, 16.0);
+
+      tl.to("#bar1", { width: "520px", duration: 1.1, ease: "power2.out" }, 15.8);
+      tl.to("#bar2", { width: "410px", duration: 1.1, ease: "power2.out" }, 16.2);
+      tl.to("#bar3", { width: "350px", duration: 1.1, ease: "power2.out" }, 16.6);
+
+      // ── Scene 3 exit (21.5 s) + hard kills at 22.0 s ─────────────────────
+      tl.to("#s3-tag,#s3-h,#s3-body,#s3-ints,#s3-metrics",
+        { opacity: 0, duration: 0.5 }, 21.5);
+
+      tl.set("#s3-tag,#s3-h,#s3-body,#s3-ints,#s3-metrics", { opacity: 0 }, 22.0);
+
+      // ── Scene 4 entrance (22 s) ────────────────────────────────────────────
+      tl.from("#s4-tag",  { opacity: 0, y: -22, duration: 0.5  }, 22.0);
+      tl.from("#s4-h",    { opacity: 0, x: -70, duration: 0.7  }, 22.1);
+      tl.from("#s4-body", { opacity: 0, y:  22, duration: 0.55 }, 22.6);
+      tl.from("#s4-log",  { opacity: 0, x:  70, duration: 0.65 }, 22.3);
+
+      tl.from("#log1,#log2,#log3,#log4,#log5",
+        { opacity: 0, x: 40, duration: 0.4, stagger: 0.18 }, 22.5);
+
+      tl.from("#s4-p1", { opacity: 0, y: 48, duration: 0.5 }, 23.0);
+      tl.from("#s4-p2", { opacity: 0, y: 48, duration: 0.5 }, 23.3);
+      tl.from("#s4-p3", { opacity: 0, y: 48, duration: 0.5 }, 23.6);
+
+      // ── Scene 4 exit (28.5 s) + hard kills at 29.0 s ─────────────────────
+      tl.to("#s4-tag,#s4-h,#s4-body,#s4-log,#s4-p1,#s4-p2,#s4-p3",
+        { opacity: 0, duration: 0.5 }, 28.5);
+
+      tl.set("#s4-tag,#s4-h,#s4-body,#s4-log,#s4-p1,#s4-p2,#s4-p3", { opacity: 0 }, 29.0);
+
+      // ── Scene 5 CTA entrance (29 s) ───────────────────────────────────────
+      tl.from("#s5-tag", { opacity: 0, y:   20, duration: 0.4  }, 29.0);
+      tl.from("#s5-h",   { opacity: 0, scale: 1.08, duration: 0.5 }, 29.1);
+      tl.from("#s5-sub", { opacity: 0, y:   18, duration: 0.4  }, 29.3);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
